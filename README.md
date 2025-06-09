@@ -35,7 +35,7 @@ On terminal </br>
 ```
 
 ```diff
-git clone https://github.com/username/CyberPhisher.git
+git clone https://github.com/CyberSecuritySolutionsPAK/CyberPhisher.git
 ```
 ```diff
 chmod -R 777 CyberPhisher 
@@ -57,7 +57,7 @@ Installation on Android OS. </br>
 On Termux </br>
 
 ```diff
-git clone https://github.com/username/CyberPhisher.git
+git clone https://github.com/CyberSecuritySolutionsPAK/CyberPhisher.git
 ```
 
 ```diff
